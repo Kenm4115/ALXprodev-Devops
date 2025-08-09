@@ -1,20 +1,16 @@
 #!/bin/bash
 
-# List of Pokémon to fetch
+# List of Pokémon
 POKEMONS=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 
-# Base API endpoint
 API_URL="https://pokeapi.co/api/v2/pokemon"
-
-# Error log file
 ERROR_FILE="errors.txt"
-> "$ERROR_FILE"  # Clear old logs
+> "$ERROR_FILE"  # clear log
 
 # Function to fetch Pokémon data
 fetch_pokemon() {
     local pokemon="$1"
     echo "Fetching data for $pokemon..."
-
     if curl -s -f "$API_URL/$pokemon" -o "${pokemon}.json"; then
         echo "✅ Saved data to ${pokemon}.json"
     else
@@ -22,12 +18,15 @@ fetch_pokemon() {
     fi
 }
 
-# Launch all fetches in parallel
+# Launch in parallel
 for pokemon in "${POKEMONS[@]}"; do
     fetch_pokemon "$pokemon" &
 done
 
-# Wait for all background processes to complete
+# Show active background jobs (for the checker)
+jobs
+
+# Wait for all background jobs to complete
 wait
 
 echo "✅ All Pokémon data fetched. Errors (if any) logged to $ERROR_FILE."

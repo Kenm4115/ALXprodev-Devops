@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# File containing API data from Task 0
 DATA_FILE="data.json"
 
-# Extract values using jq
-name=$(jq -r '.name' "$DATA_FILE" | sed 's/.*/\u&/')  # Capitalize
+# Extract and format
+name=$(jq -r '.name' "$DATA_FILE" | sed 's/.*/\u&/')
+type=$(jq -r '.types[0].type.name' "$DATA_FILE" | sed 's/.*/\u&/')
 height=$(jq -r '.height' "$DATA_FILE")
 weight=$(jq -r '.weight' "$DATA_FILE")
-type=$(jq -r '.types[0].type.name' "$DATA_FILE" | sed 's/.*/\u&/')
 
-# Convert height from decimeters to meters (divide by 10)
-height_m=$(awk "BEGIN {printf \"%.1f\", $height/10}")
+# Convert units
+formatted_height=$(awk "BEGIN {printf \"%.1f\", $height/10}")
+formatted_weight=$(awk "BEGIN {printf \"%.0f\", $weight/10}")
 
-# Convert weight from hectograms to kg (divide by 10)
-weight_kg=$(awk "BEGIN {printf \"%.0f\", $weight/10}")
-
-# Output in human-readable format
-echo "$name is of type $type, weighs ${weight_kg}kg, and is ${height_m}m tall."
+# EXACT expected output
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
