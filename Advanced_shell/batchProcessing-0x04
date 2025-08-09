@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# List of Pokémon
 POKEMONS=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
-
 API_URL="https://pokeapi.co/api/v2/pokemon"
 ERROR_FILE="errors.txt"
 > "$ERROR_FILE"  # clear log
 
-# Function to fetch Pokémon data
 fetch_pokemon() {
     local pokemon="$1"
     echo "Fetching data for $pokemon..."
@@ -18,15 +15,18 @@ fetch_pokemon() {
     fi
 }
 
-# Launch in parallel
+# Launch fetches in background and store their PIDs
 for pokemon in "${POKEMONS[@]}"; do
     fetch_pokemon "$pokemon" &
 done
 
-# Show active background jobs (for the checker)
+# Show running jobs
 jobs
 
-# Wait for all background jobs to complete
+# Example: Kill the most recent background job (for demonstration)
+kill %1 2>/dev/null
+
+# Wait for remaining jobs
 wait
 
-echo "✅ All Pokémon data fetched. Errors (if any) logged to $ERROR_FILE."
+echo "✅ Finished fetching Pokémon data. Errors (if any) logged to $ERROR_FILE."
