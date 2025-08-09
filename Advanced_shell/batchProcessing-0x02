@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# List of Pokémon to fetch
+POKEMONS=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+# Base API endpoint
+API_URL="https://pokeapi.co/api/v2/pokemon"
+
+# Error log file
+ERROR_FILE="errors.txt"
+> "$ERROR_FILE"  # Clear old logs
+
+# Loop through each Pokémon
+for pokemon in "${POKEMONS[@]}"; do
+    echo "Fetching data for $pokemon..."
+    
+    success=false
+    for attempt in {1..3}; do
+        echo "  Attempt $attempt..."
+        
+        if curl -s -f "$API_URL/$pokemon" -o "${pokemon}.json"; then
+            echo "✅ Saved data to ${pokemon}.json"
+            success=true
+            break
+        else
+            echo "⚠️  Attempt $attempt failed for $pokemon"
+            sleep 2  # small wait before retry
+        fi
+    done
+
+    if [ "$success" = false ]; then
+        echo "❌ Failed to fetch data for $pokemon after 3 attempts" >> "$ERROR_FILE"
+    fi
+
+    # Wait before moving to the next Pokémon to avoid rate limits
+    sleep 2
+done
+
+echo "Batch processing completed. Errors (if any) logged to $ERROR_FILE."
